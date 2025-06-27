@@ -1,19 +1,19 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
-
-// Interface for form data with index signature to satisfy FormDataType
+import { LuIdCard } from "react-icons/lu";
+// Interface for form data with index signature
 interface FormData {
   email: string;
   password?: string;
   password_confirmation?: string;
   name?: string;
   remember?: boolean;
-  [key: string]: string | boolean | undefined; // Index signature for dynamic access
+  [key: string]: string | boolean | undefined;
 }
 
 interface FieldConfig {
-  key: string; // Explicitly string to match htmlFor and id
+  key: string;
   type: string;
   label: string;
   placeholder: string;
@@ -24,6 +24,7 @@ interface TabConfig {
   name: 'login' | 'register' | 'reset';
   title: string;
   subtitle: string;
+  submitRoute: string;
   route: string;
   buttonText: string;
   fields: FieldConfig[];
@@ -35,7 +36,8 @@ const tabs: TabConfig[] = [
     name: 'login',
     title: '登入',
     subtitle: '歡迎回到程式練習平台！請輸入您的帳號密碼。',
-    route: '/login',
+    route: route('login.page'), // Adjusted to use Inertia route helper
+    submitRoute: route('auth.login'), // Adjusted to use Inertia route helper
     buttonText: '登入',
     fields: [
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
@@ -46,10 +48,12 @@ const tabs: TabConfig[] = [
     name: 'register',
     title: '註冊',
     subtitle: '加入程式練習平台！請填寫以下資訊。',
-    route: '/register',
+    route: route('register.page'), // Adjusted to use Inertia route helper
+    submitRoute: route('auth.register'), // Adjusted to use Inertia route helper
     buttonText: '註冊',
     fields: [
-      { key: 'name', type: 'text', label: '使用者名稱', placeholder: '輸入您的使用者名稱', icon: <FaUser className="h-5 w-5 text-gray-400" /> },
+      { key: 'name', type: 'text', label: '姓名', placeholder: '輸入您的姓名', icon: <FaUser className="h-5 w-5 text-gray-400" /> },
+      { key: 'student_number', type: 'text', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
       { key: 'password', type: 'password', label: '密碼', placeholder: '輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
       { key: 'password_confirmation', type: 'password', label: '確認密碼', placeholder: '再次輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
@@ -59,7 +63,8 @@ const tabs: TabConfig[] = [
     name: 'reset',
     title: '重置密碼',
     subtitle: '輸入您的電子郵件以重置密碼。',
-    route: '/password/email',
+    route: route('password.reset.page'), // Adjusted to use Inertia route helper
+    submitRoute: "/", // Adjusted to use Inertia route helper
     buttonText: '發送重置連結',
     fields: [
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
@@ -89,7 +94,7 @@ const InputField: React.FC<InputFieldProps> = ({ field, data, setData, errors, s
       <input
         id={field.key}
         type={field.type === 'password' && showPassword ? 'text' : field.type}
-        value={(data[field.key] as string | undefined) ?? ''} // Use ?? for nullish coalescing
+        value={(data[field.key] as string | undefined) ?? ''}
         onChange={(e) => setData(field.key, e.target.value)}
         className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         placeholder={field.placeholder}
@@ -111,8 +116,12 @@ const InputField: React.FC<InputFieldProps> = ({ field, data, setData, errors, s
   </div>
 );
 
-const AuthForm: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'reset'>('login');
+interface AuthFormProps {
+  activeTab: 'login' | 'register' | 'reset';
+  message?: string;
+}
+
+const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { data, setData, post, processing, errors } = useForm<FormData>({
@@ -127,7 +136,9 @@ const AuthForm: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    post(currentTab.route);
+    console.log('Submitting form for:', currentTab.name);
+    console.log('currentTab.route:', currentTab.submitRoute);
+    post(currentTab.submitRoute);
   };
 
   return (
@@ -136,25 +147,25 @@ const AuthForm: React.FC = () => {
       <div className="min-h-screen bg-gray-50 font-sans antialiased flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-8">{currentTab.title} Klearn</h2>
-          <p className="text-center text-gray-600 mb-8">{currentTab.subtitle}</p>
-
+          {/* <p className="text-center text-gray-600 mb-8">{currentTab.subtitle}</p> */}
+          <p className='text-center text-green-400 mb-8'>{message}</p>
           {/* Tab Navigation */}
           {activeTab !== 'reset' && (
             <div className="flex justify-center mb-6 space-x-4">
               {tabs
                 .filter((tab) => tab.name !== 'reset')
                 .map((tab) => (
-                  <button
+                  <Link
                     key={tab.name}
-                    onClick={() => setActiveTab(tab.name)}
-                    className={`px-4 py-2 text-sm font-medium ${activeTab === tab.name ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
+                    href={tab.route}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === tab.name ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
                   >
                     {tab.title}
-                  </button>
+                  </Link>
                 ))}
             </div>
           )}
-
+          <hr className="my-6 border-gray-200" />
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6 min-h-[400px]">
             {currentTab.fields.map((field) => (
@@ -174,7 +185,7 @@ const AuthForm: React.FC = () => {
                   <input
                     id="remember"
                     type="checkbox"
-                    checked={data.remember ?? false} // Use ?? for nullish coalescing
+                    checked={data.remember ?? false}
                     onChange={(e) => setData('remember', e.target.checked)}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
@@ -182,20 +193,18 @@ const AuthForm: React.FC = () => {
                     記住我
                   </label>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('reset')}
+                <Link
+                  href={route('password.reset.page')}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
                   忘記密碼？
-                </button>
+                </Link>
               </div>
             )}
             <button
               type="submit"
               disabled={processing}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-blue-700
- hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 disabled:opacity-50"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 disabled:opacity-50"
             >
               {processing ? `${currentTab.buttonText}中...` : currentTab.buttonText}
             </button>
@@ -207,34 +216,25 @@ const AuthForm: React.FC = () => {
               {activeTab === 'login' && (
                 <>
                   還沒有帳號？{' '}
-                  <button
-                    onClick={() => setActiveTab('register')}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
+                  <Link href={route('register.page')} className="text-blue-600 hover:text-blue-800 font-medium">
                     註冊
-                  </button>
+                  </Link>
                 </>
               )}
               {activeTab === 'register' && (
                 <>
                   已有帳號？{' '}
-                  <button
-                    onClick={() => setActiveTab('login')}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
+                  <Link href={route('login.page')} className="text-blue-600 hover:text-blue-800 font-medium">
                     登入
-                  </button>
+                  </Link>
                 </>
               )}
               {activeTab === 'reset' && (
                 <>
                   回到{' '}
-                  <button
-                    onClick={() => setActiveTab('login')}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
+                  <Link href={route('login.page')} className="text-blue-600 hover:text-blue-800 font-medium">
                     登入
-                  </button>
+                  </Link>
                 </>
               )}
             </p>
