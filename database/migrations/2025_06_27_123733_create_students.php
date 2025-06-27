@@ -1,19 +1,16 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class CreateStudentsTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-            $table->id();
-            $table->string('student_number', 20)->unique();
+            $table->string('student_id', 20)->unique()->primary();
             $table->string('password', 100);
-            $table->foreignId('class_id')->constrained('classes')->onDelete('restrict');
             $table->string('name', 50);
             $table->string('email', 100)->nullable();
             $table->dateTime('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
@@ -21,8 +18,8 @@ class CreateStudentsTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('students');
     }
-}
+};

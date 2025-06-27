@@ -1,17 +1,15 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class CreateTeachersTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('teachers', function (Blueprint $table) {
-            $table->id();
-            $table->string('teacher_id', 20)->unique();
+            $table->string('teacher_id', 20)->unique()->primary();
             $table->string('password', 100);
             $table->string('name', 50);
             $table->string('email', 100)->nullable();
@@ -20,8 +18,8 @@ class CreateTeachersTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('teachers');
     }
-}
+};
