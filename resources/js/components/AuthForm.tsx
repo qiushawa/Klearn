@@ -54,7 +54,7 @@ const tabs: TabConfig[] = [
     buttonText: '註冊',
     fields: [
       { key: 'name', type: 'text', label: '姓名', placeholder: '輸入您的姓名', icon: <FaUser className="h-5 w-5 text-gray-400" /> },
-      { key: 'student_id', type: 'id', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
+      { key: 'student_id', type: 'number', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
       { key: 'password', type: 'password', label: '密碼', placeholder: '輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
       { key: 'password_confirmation', type: 'password', label: '確認密碼', placeholder: '再次輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
