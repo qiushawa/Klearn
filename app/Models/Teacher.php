@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Authenticatable
 {
@@ -21,9 +22,10 @@ class Teacher extends Authenticatable
         return 'teacher_id';
     }
 
-    // 一位教師可以創建多個題目
-    public function questions()
+    // 一位教師可以創建多個課程
+    public function courses(): HasMany
     {
-        return $this->hasMany(Question::class, 'teacher_id', 'id');
+        return $this->hasMany(Course::class, 'teacher_id', 'id'); // 假設有 teacher_id 外鍵
     }
+
 }

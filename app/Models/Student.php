@@ -4,51 +4,42 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
+use App\Notifications\ResetPasswordNotification;
+
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Student extends Authenticatable
 {
     use Notifiable;
 
     protected $table = 'students';
-    protected $primaryKey = 'id';
-    protected $fillable = ['student_number', 'password', 'class_id', 'name', 'email', 'created_at', 'updated_at'];
+    protected $primaryKey = 'student_id'; // 使用 student_id 作為主鍵
+    protected $fillable = ['student_id', 'password', 'class_id', 'name', 'email', 'created_at', 'updated_at'];
     protected $hidden = ['password', 'remember_token'];
     public $timestamps = true;
 
     // 自訂認證欄位（使用 student_number 代替預設的 email）
     public function getAuthIdentifierName()
     {
-        return 'student_number';
+        return 'student_id';
     }
-
-    // 查詢學生解題總覽
-    public function getSubmissionOverview()
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
     {
-        return DB::table('student_submission_overview')
-            ->where('student_id', $this->id)
-            ->first();
+        $this->notify(new ResetPasswordNotification($token));
     }
-
-    // 查詢學生排行榜（可選：限制班級）
-    public static function getRanking($className = null)
+    public function courses(): BelongsToMany
     {
-        $query = DB::table('student_ranking');
-        if ($className) {
-            $query->where('class_name', $className);
-        }
-        return $query->orderBy('class_rank')->get();
-    }
-
-    // 學生屬於一個班級
-    public function class()
-    {
-        return $this->belongsTo(SchoolClass::class, 'class_id', 'id');
-    }
-
-    // 學生有多個提交記錄
-    public function submissions()
-    {
-        return $this->hasMany(Submission::class, 'student_id', 'id');
+        return $this->belongsToMany(
+            Course::class,           // 關聯的模型
+            'students_courses',     // 中間表名稱
+            'student_id',           // 本模型的外鍵
+            'course_id'             // 關聯模型的外鍵
+        );
     }
 }

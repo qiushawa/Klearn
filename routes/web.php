@@ -3,10 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    $student = auth()->guard('students')->user();
+    return Inertia::render('welcome', [
+        'student_name' => $student?->name,
+    ]);
 })->name('home');
 
-Route::get('/login', function () {
-    return Inertia::render('auth/login');
-})->name('login');
+
+require __DIR__ . '/auth.php';

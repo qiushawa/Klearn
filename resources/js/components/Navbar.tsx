@@ -3,16 +3,42 @@ import React, { useState } from 'react';
 interface NavItem {
   label: string;
   href: string;
-  isHighlight?: boolean; // 可選屬性，用於高亮顯示（如“登入”按鈕）
+  isHighlight?: boolean;
 }
 
 interface NavbarProps {
   items: NavItem[];
-  brandName?: string; // 可選的品牌名稱，默認為 KLearn
+  brandName?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ items, brandName = 'KLearn' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLogout = (e: React.FormEvent, href: string) => {
+    e.preventDefault();
+    // Get the CSRF token from the meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // Create a form dynamically to submit POST request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = href;
+
+    // Add CSRF token to the form
+    if (csrfToken) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = '_token'; // Laravel expects '_token' as the CSRF field name
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+    } else {
+      console.error('CSRF token not found');
+      return;
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -23,17 +49,31 @@ const Navbar: React.FC<NavbarProps> = ({ items, brandName = 'KLearn' }) => {
           </a>
           <div className="hidden md:flex space-x-8">
             {items.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`${
-                  item.isHighlight
-                    ? 'text-blue-700 hover:text-blue-800'
-                    : 'text-gray-700 hover:text-blue-700'
-                } font-medium transition-colors`}
-              >
-                {item.label}
-              </a>
+              item.label === '登出' ? (
+                <button
+                  key={item.href}
+                  onClick={(e) => handleLogout(e, item.href)}
+                  className={`${
+                    item.isHighlight
+                      ? 'text-blue-700 hover:text-blue-800'
+                      : 'text-gray-700 hover:text-blue-700'
+                  } font-medium transition-colors`}
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={`${
+                    item.isHighlight
+                      ? 'text-blue-700 hover:text-blue-800'
+                      : 'text-gray-700 hover:text-blue-700'
+                  } font-medium transition-colors`}
+                >
+                  {item.label}
+                </a>
+              )
             ))}
           </div>
           <button
@@ -57,17 +97,31 @@ const Navbar: React.FC<NavbarProps> = ({ items, brandName = 'KLearn' }) => {
         >
           <div className="px-4 pb-4 pt-2 space-y-2">
             {items.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`block py-1 ${
-                  item.isHighlight
-                    ? 'text-blue-700 hover:text-blue-800'
-                    : 'text-gray-700 hover:text-blue-700'
-                } font-medium`}
-              >
-                {item.label}
-              </a>
+              item.label === '登出' ? (
+                <button
+                  key={item.href}
+                  onClick={(e) => handleLogout(e, item.href)}
+                  className={`block py-1 ${
+                    item.isHighlight
+                      ? 'text-blue-700 hover:text-blue-800'
+                      : 'text-gray-700 hover:text-blue-700'
+                  } font-medium`}
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={`block py-1 ${
+                    item.isHighlight
+                      ? 'text-blue-700 hover:text-blue-800'
+                      : 'text-gray-700 hover:text-blue-700'
+                  } font-medium`}
+                >
+                  {item.label}
+                </a>
+              )
             ))}
           </div>
         </div>

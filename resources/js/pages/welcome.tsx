@@ -1,11 +1,17 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import Navbar from '@/components/Navbar';
 import { FaPython, FaJava, FaRust, FaEnvelope, FaDiscord, FaInstagram } from "react-icons/fa";
 import { IoLogoJavascript } from "react-icons/io5";
 import { SiCplusplus, SiPhp } from 'react-icons/si';
 import { Avatar } from "flowbite-react";
 
+interface PageProps {
+    student_name: string,
+    [key: string]: unknown
+}
+
 export default function Welcome() {
+    const { props } = usePage<PageProps>()
     const languages = [
         { id: 1, name: 'Python', icon: <FaPython className="text-5xl text-blue-600 mb-4 mx-auto" size={80} />, description: '(3.8.1)' },
         { id: 2, name: 'JavaScript', icon: <IoLogoJavascript className="text-5xl text-yellow-500 mb-4 mx-auto" size={80} />, description: '(Node.js 12.14.0)' },
@@ -29,6 +35,7 @@ export default function Welcome() {
         </p>
     };
 
+    const student_name = props.student_name
     return (
         <>
             <Head title="KLearn - 程式練習平台" />
@@ -39,7 +46,9 @@ export default function Welcome() {
                         { href: '#about', label: '關於我們', isHighlight: false },
                         { href: '#languages', label: '支援語言', isHighlight: false },
                         { href: '#manual', label: '使用手冊', isHighlight: false },
-                        { href: '/login', label: '登入', isHighlight: true },
+                        student_name
+                            ? { href: route("auth.logout"), label: '登出', isHighlight: true }
+                            : { href: route("login.page"), label: '登入', isHighlight: true },
                     ]}
                     brandName="KLearn"
                 />
@@ -54,15 +63,17 @@ export default function Welcome() {
                             專為晚自習設計的程式練習工具，助老師輕鬆出題，學生高效完成作業！
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
-                            <a
-                                href="/courses"
-                                className="inline-block bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                            >
-                                開始出題或練習
-                            </a>
+                            {student_name && (
+                                <a
+                                    href="/courses"
+                                    className="inline-block bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 hover:shadow-lg"
+                                >
+                                    我的課程
+                                </a>
+                            )}
                             <a
                                 href="#languages"
-                                className="inline-block bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-700 transition-all duration-300 transform hover:-translate-y-1"
+                                className="inline-block bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-700"
                             >
                                 查看支援語言
                             </a>

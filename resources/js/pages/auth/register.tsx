@@ -6,9 +6,9 @@ interface PageProps {
 }
 export default function Login() {
     // 取得 Laravel 傳來的 success 訊息
-    const props = usePage<PageProps>().props;
+    const {props} = usePage<PageProps>();
     const message = props.message || '';
     return (
-        <AuthForm activeTab='login' message={message} />
+        <AuthForm activeTab='register' message={message} />
     );
 }
