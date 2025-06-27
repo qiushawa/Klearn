@@ -9,6 +9,33 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
+    /**
+     * 顯示登入頁面
+     */
+    public function showLoginPage()
+    {
+        // 如果已經登入，則重定向到首頁
+        if (auth()->guard('students')->check()) {
+            return redirect()->route('home');
+        }
+        // 獲取註冊成功訊息
+        $message = session('success') ? '註冊成功，請使用您的學號和密碼登入。' : '';
+
+        return Inertia::render('auth/login', [
+            'message' => $message,
+        ]);
+    }
+    /**
+     * 顯示註冊頁面
+     */
+    public function showRegisterPage()
+    {
+        // 如果已經登入，則重定向到首頁
+        if (auth()->guard('students')->check()) {
+            return redirect()->route('home');
+        }
+        return Inertia::render('auth/register');
+    }
     public function login()
     {
         // 驗證輸入資料
@@ -71,6 +98,6 @@ class AuthController extends Controller
             'email' => $data['email'],
         ]);
         // 重定向到登入頁面並顯示成功訊息
-        return redirect()->route('login.page')->with('success', '註冊成功！請使用您的電子郵件和密碼登入。');
+        return redirect()->route('login.page')->with('success', true);
     }
 }

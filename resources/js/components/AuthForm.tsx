@@ -5,7 +5,7 @@ import { LuIdCard } from "react-icons/lu";
 // Interface for form data with index signature
 interface FormData {
   email: string;
-  student_id?: string; // Optional for register and reset tabs
+  student_id?: string; // Optional for register and forgot-password tabs
   password?: string;
   password_confirmation?: string;
   name?: string;
@@ -22,7 +22,7 @@ interface FieldConfig {
 }
 
 interface TabConfig {
-  name: 'login' | 'register' | 'reset';
+  name: 'login' | 'register' | 'forgot-password';
   title: string;
   subtitle: string;
   submitRoute: string;
@@ -61,11 +61,11 @@ const tabs: TabConfig[] = [
     ],
   },
   {
-    name: 'reset',
-    title: '重置密碼',
-    subtitle: '輸入您的電子郵件以重置密碼。',
-    route: route('password.reset.page'), // Adjusted to use Inertia route helper
-    submitRoute: "/", // Adjusted to use Inertia route helper
+    name: 'forgot-password',
+    title: '忘記密碼',
+    subtitle: '輸入您的電子郵件以忘記密碼。',
+    route: route('forgot-password.page'),
+    submitRoute: route('password.email'),
     buttonText: '發送重置連結',
     fields: [
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
@@ -131,7 +131,7 @@ const InputField: React.FC<InputFieldProps> = ({ field, data, setData, errors, s
 );
 
 interface AuthFormProps {
-  activeTab: 'login' | 'register' | 'reset';
+  activeTab: 'login' | 'register' | 'forgot-password';
   message?: string;
 }
 
@@ -160,14 +160,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
       <Head title={currentTab.title} />
       <div className="min-h-screen bg-gray-50 font-sans antialiased flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-8">{currentTab.title} Klearn</h2>
+          <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-8">{currentTab.title}</h2>
           {/* <p className="text-center text-gray-600 mb-8">{currentTab.subtitle}</p> */}
-          <p className='text-center text-green-400 mb-8'>{message}</p>
+
           {/* Tab Navigation */}
-          {activeTab !== 'reset' && (
+          {activeTab !== 'forgot-password' && (
             <div className="flex justify-center mb-6 space-x-4">
               {tabs
-                .filter((tab) => tab.name !== 'reset')
+                .filter((tab) => tab.name !== 'forgot-password')
                 .map((tab) => (
                   <Link
                     key={tab.name}
@@ -181,6 +181,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
           )}
           <hr className="my-6 border-gray-200" />
           {/* Form */}
+          <p className='text-center text-green-400 mb-8'>{message}</p>
           <form onSubmit={handleSubmit} className="space-y-6 min-h-[400px]">
             {currentTab.fields.map((field) => (
               <InputField
@@ -209,7 +210,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
                   </label>
                 </div>
                 <Link
-                  href={route('password.reset.page')}
+                  href={route('forgot-password.page')}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
                   忘記密碼？
@@ -244,7 +245,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
                   </Link>
                 </>
               )}
-              {activeTab === 'reset' && (
+              {activeTab === 'forgot-password' && (
                 <>
                   回到{' '}
                   <Link href={route('login.page')} className="text-blue-600 hover:text-blue-800 font-medium">

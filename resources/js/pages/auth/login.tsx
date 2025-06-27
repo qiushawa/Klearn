@@ -1,9 +1,13 @@
 import AuthForm from '@/components/AuthForm';
+import { usePage } from '@inertiajs/react';
+interface PageProps {
+    message?: string;
+    [key: string]: unknown; // Add index signature for compatibility
+}
 export default function Login() {
     // 取得 Laravel 傳來的 success 訊息
-    const params = new URLSearchParams(window.location.search);
-    const message = params.get('success') || "";
-
+    const props = usePage<PageProps>().props;
+    const message = props.message || '';
     return (
         <AuthForm activeTab='login' message={message} />
     );

@@ -8,7 +8,8 @@ export default function Login() {
     // 取得 Laravel 傳來的 success 訊息
     const props = usePage<PageProps>().props;
     const message = props.message || '';
+    console.log('Forgot Password Page Props:', props);
     return (
-        <AuthForm activeTab='register' message={message} />
+        <AuthForm activeTab='forgot-password' message={message} />
     );
 }

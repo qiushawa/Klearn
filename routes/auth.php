@@ -1,27 +1,19 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController; // 如果需要忘記密碼功能，可以取消註解
 
 Route::prefix('auth')->group(function () {
     // 驗證頁面
-    $guestRoutes = [
-        ['uri' => '/login', 'view' => 'auth/login', 'name' => 'login.page'],
-        ['uri' => '/sign-up', 'view' => 'auth/register', 'name' => 'register.page'],
-        ['uri' => '/reset-password', 'view' => 'auth/reset', 'name' => 'password.reset.page'],
-    ];
-
-    foreach ($guestRoutes as $route) {
-        Route::get($route['uri'], function () use ($route) {
-            if (auth()->guard('students')->check()) {
-                return redirect()->route('home');
-            }
-            return Inertia::render($route['view']);
-        })->name($route['name']);
-    }
-
-    // post 驗證
+    Route::get('/login', [AuthController::class, 'showLoginPage'])->name('login.page');
+    Route::get('/register', [AuthController::class, 'showRegisterPage'])->name('register.page');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout.page');
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('forgot-password.page');
+    Route::get('reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    // 驗證請求
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });

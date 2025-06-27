@@ -1,0 +1,5 @@
+const Ziggy = {"url":"https:\/\/klearn.qiushawa.studio","port":null,"defaults":{},"routes":{"home":{"uri":"\/","methods":["GET","HEAD"]},"login.page":{"uri":"auth\/login","methods":["GET","HEAD"]},"register.page":{"uri":"auth\/register","methods":["GET","HEAD"]},"logout.page":{"uri":"auth\/logout","methods":["GET","HEAD"]},"forgot-password.page":{"uri":"auth\/forgot-password","methods":["GET","HEAD"]},"password.reset":{"uri":"auth\/reset-password\/{token}","methods":["GET","HEAD"],"parameters":["token"]},"auth.login":{"uri":"auth\/login","methods":["POST"]},"auth.logout":{"uri":"auth\/logout","methods":["POST"]},"auth.register":{"uri":"auth\/register","methods":["POST"]},"password.email":{"uri":"auth\/forgot-password","methods":["POST"]},"storage.local":{"uri":"storage\/{path}","methods":["GET","HEAD"],"wheres":{"path":".*"},"parameters":["path"]}}};
+if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {
+  Object.assign(Ziggy.routes, window.Ziggy.routes);
+}
+export { Ziggy };
