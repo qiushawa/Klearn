@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-// 使用 klearn 子網域
-Route::domain('klearn.qiushawa.studio')->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('welcome');
-    })->name('home');
-});
+Route::get('/', function () {
+    $student = auth()->guard('students')->user();
+    return Inertia::render('welcome', [
+        'student_name' => $student?->name,
+    ]);
+})->name('home');
+
 
 require __DIR__ . '/auth.php';

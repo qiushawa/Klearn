@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('password', 100);
             $table->string('name', 50);
             $table->string('email', 100)->nullable();
+            $table->string('remember_token', 100)->nullable();
             $table->dateTime('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
         });

@@ -3,20 +3,22 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthController;
 
-// 使用 auth-klearn 子網域
-Route::domain('auth-klearn.qiushawa.studio')->group(function () {
+Route::prefix('auth')->group(function () {
     // 驗證頁面
-    Route::get('/login', function () {
-        return Inertia::render('auth/login');
-    })->name('login.page');
+    $guestRoutes = [
+        ['uri' => '/login', 'view' => 'auth/login', 'name' => 'login.page'],
+        ['uri' => '/sign-up', 'view' => 'auth/register', 'name' => 'register.page'],
+        ['uri' => '/reset-password', 'view' => 'auth/reset', 'name' => 'password.reset.page'],
+    ];
 
-    Route::get('/sign-up', function () {
-        return Inertia::render('auth/register');
-    })->name('register.page');
-
-    Route::get('/reset-password', function () {
-        return Inertia::render('auth/reset');
-    })->name('password.reset.page');
+    foreach ($guestRoutes as $route) {
+        Route::get($route['uri'], function () use ($route) {
+            if (auth()->guard('students')->check()) {
+                return redirect()->route('home');
+            }
+            return Inertia::render($route['view']);
+        })->name($route['name']);
+    }
 
     // post 驗證
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');

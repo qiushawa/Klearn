@@ -5,6 +5,7 @@ import { LuIdCard } from "react-icons/lu";
 // Interface for form data with index signature
 interface FormData {
   email: string;
+  student_id?: string; // Optional for register and reset tabs
   password?: string;
   password_confirmation?: string;
   name?: string;
@@ -40,7 +41,7 @@ const tabs: TabConfig[] = [
     submitRoute: route('auth.login'), // Adjusted to use Inertia route helper
     buttonText: '登入',
     fields: [
-      { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
+      { key: 'student_id', type: 'number', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
       { key: 'password', type: 'password', label: '密碼', placeholder: '輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
     ],
   },
@@ -53,7 +54,7 @@ const tabs: TabConfig[] = [
     buttonText: '註冊',
     fields: [
       { key: 'name', type: 'text', label: '姓名', placeholder: '輸入您的姓名', icon: <FaUser className="h-5 w-5 text-gray-400" /> },
-      { key: 'student_number', type: 'text', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
+      { key: 'student_id', type: 'id', label: '學號', placeholder: '輸入您的學號', icon: <LuIdCard className="h-5 w-5 text-gray-400" /> },
       { key: 'email', type: 'email', label: '電子郵件', placeholder: '輸入您的電子郵件', icon: <FaEnvelope className="h-5 w-5 text-gray-400" /> },
       { key: 'password', type: 'password', label: '密碼', placeholder: '輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
       { key: 'password_confirmation', type: 'password', label: '確認密碼', placeholder: '再次輸入您的密碼', icon: <FaLock className="h-5 w-5 text-gray-400" /> },
@@ -91,15 +92,27 @@ const InputField: React.FC<InputFieldProps> = ({ field, data, setData, errors, s
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         {field.icon}
       </div>
-      <input
-        id={field.key}
-        type={field.type === 'password' && showPassword ? 'text' : field.type}
-        value={(data[field.key] as string | undefined) ?? ''}
-        onChange={(e) => setData(field.key, e.target.value)}
-        className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-        placeholder={field.placeholder}
-        required
-      />
+    {(() => {
+      let inputType: string;
+      if (field.type === 'password' && showPassword) {
+        inputType = 'text';
+      } else if (field.type === 'number') {
+        inputType = 'number';
+      } else {
+        inputType = field.type;
+      }
+      return (
+        <input
+          id={field.key}
+          type={inputType}
+          value={(data[field.key] as string | undefined) ?? ''}
+          onChange={(e) => setData(field.key, e.target.value)}
+          className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder={field.placeholder}
+          required
+        />
+      );
+    })()}
       {field.type === 'password' && (
         <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
           <button
@@ -111,8 +124,9 @@ const InputField: React.FC<InputFieldProps> = ({ field, data, setData, errors, s
           </button>
         </div>
       )}
-      {errors[field.key] && <p className="mt-2 text-sm text-red-600">{errors[field.key]}</p>}
+
     </div>
+     {errors[field.key] && <p className="mt-2 text-sm text-red-600">{errors[field.key]}</p>}
   </div>
 );
 
@@ -184,6 +198,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ activeTab, message }) => {
                 <div className="flex items-center">
                   <input
                     id="remember"
+                    name='remember'
                     type="checkbox"
                     checked={data.remember ?? false}
                     onChange={(e) => setData('remember', e.target.checked)}
