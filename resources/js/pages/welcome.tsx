@@ -39,7 +39,7 @@ export default function Welcome() {
                         { href: '#about', label: '關於我們', isHighlight: false },
                         { href: '#languages', label: '支援語言', isHighlight: false },
                         { href: '#manual', label: '使用手冊', isHighlight: false },
-                        { href: '/login', label: '登入', isHighlight: true },
+                        { href:route("login-page"), label: '登入', isHighlight: true },
                     ]}
                     brandName="KLearn"
                 />
@@ -56,13 +56,13 @@ export default function Welcome() {
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <a
                                 href="/courses"
-                                className="inline-block bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                                className="inline-block bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 hover:shadow-lg"
                             >
-                                開始出題或練習
+                                我的課程
                             </a>
                             <a
                                 href="#languages"
-                                className="inline-block bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-700 transition-all duration-300 transform hover:-translate-y-1"
+                                className="inline-block bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-700"
                             >
                                 查看支援語言
                             </a>
