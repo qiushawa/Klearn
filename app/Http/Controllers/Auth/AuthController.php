@@ -63,7 +63,7 @@ class AuthController extends Controller
 
             // * 暫時重定導向到首頁，日後可以改為重定向到學生主頁或其他頁面
             // from auth-klearn.qiushawa.studio to klearn.qiushawa.studio
-            return Inertia::location('https://klearn.qiushawa.studio');
+            return redirect()->route('home')->with('success', '登入成功！');
         }
 
         // 認證失敗（密碼錯誤），返回錯誤訊息
